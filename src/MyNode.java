@@ -9,9 +9,11 @@ public class MyNode implements Node, EDProtocol {
     MyNode nodeRight;
     private String message = null;
     private static final int pid = 1;
+    private int ringPid = 1;
 
-    public MyNode(long ID){
+    public MyNode(long ID, int ringPid){
         this.ID = ID;
+        this.ringPid = ringPid;
     }
 
     @Override
@@ -36,6 +38,10 @@ public class MyNode implements Node, EDProtocol {
 
     public long getID(){
         return this.ID;
+    }
+
+    public int getRingPid(){
+        return this.ringPid;
     }
 
     @Override
@@ -106,9 +112,44 @@ public class MyNode implements Node, EDProtocol {
         }
     }
 
-    public void deliver(Node node, Object message) {
-        EDProtocol protocol = (EDProtocol) node.getProtocol(pid);
-        protocol.processEvent(this, pid, message);
+    public void deliver(Node sender, Object message) {
+        // Vérifier si le message est destiné à ce noeud
+        if (this.getID() == sender.getID()) {
+            // Traiter le message
+            System.out.println("Node " + this.getID() + " received message from node " + ((MyNode)message).getID());
+        }
     }
 
+
+    public void leave() {
+        MyNode leftNode = this.getNodeLeft();
+        MyNode rightNode = this.getNodeRight();
+
+        // Mise à jour des voisins de gauche et de droite
+        leftNode.setNodeRight(rightNode);
+        rightNode.setNodeLeft(leftNode);
+
+        // Suppression du nœud de l'anneau
+        setNodeLeft(null);
+        setNodeRight(null);
+    }
+
+    public void join(Ring ring) {
+        if (ring.getNodes().isEmpty()) {
+            // Si l'anneau est vide, le nouveau noeud est son propre voisin
+            this.setNodeLeft(this);
+            this.setNodeRight(this);
+            ring.addNode(this);
+        } else {
+            // Recherche du noeud voisin pour l'insertion
+            MyNode neighbor = ring.findNeighbor(this.ID);
+
+            // Insertion du nouveau noeud entre le noeud voisin et son voisin de droite
+            this.setNodeLeft(neighbor);
+            this.setNodeRight(neighbor.getNodeRight());
+            neighbor.getNodeRight().setNodeLeft(this);
+            neighbor.setNodeRight(this);
+            ring.addNode(this);
+        }
+    }
 }

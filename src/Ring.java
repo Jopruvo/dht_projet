@@ -1,3 +1,5 @@
+import peersim.core.CommonState;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,7 +14,7 @@ public class Ring {
     }
 
 
-    public void setVoisins() {
+    public void setNeighbors() {
         // On initialise les noeuds de gauche et de droite en fonction du placement dans la liste pour qu'elle soit ordonnée
         // Ici, si il n'y a qu'un seul noeud, il est son propre voisin de gauche et de droite
         if (listNodes.size() == 1) {
@@ -47,17 +49,50 @@ public class Ring {
         });
 
         // On set bien les voisins à chaque noeud ajouter dans la liste
-        this.setVoisins();
+        this.setNeighbors();
 
     }
 
     public void removeNode(MyNode node) {
         // On retire le noeud désirer et on remet à jour les voisins
         listNodes.remove(node);
-        this.setVoisins();
+        this.setNeighbors();
     }
 
-    public ArrayList<MyNode> getlistNodes(){
+    public ArrayList<MyNode> getNodes(){
         return this.listNodes;
     }
+
+    public MyNode getNode(long ID) {
+        for (MyNode node : this.listNodes) {
+            if (node.getID() == ID) {
+                return node;
+            }
+        }
+        return null;
+    }
+
+    public MyNode findNeighbor(long id) {
+        if (listNodes.isEmpty()) {
+            // L'anneau est vide, on ne peut pas trouver de voisin
+            return null;
+        } else if (listNodes.size() == 1) {
+            // Il n'y a qu'un noeud dans l'anneau, il est son propre voisin
+            return listNodes.get(0);
+        } else {
+            // Recherche du noeud le plus proche de l'id dans l'anneau
+            MyNode left = listNodes.get(listNodes.size() - 1);
+            MyNode right = listNodes.get(0);
+            for (int i = 1; i < listNodes.size(); i++) {
+                if (id > left.getID() && id <= listNodes.get(i).getID()) {
+                    right = listNodes.get(i);
+                    break;
+                }
+                left = listNodes.get(i);
+            }
+            // Retourne le voisin à droite du noeud trouvé
+            return right;
+        }
+    }
+
 }

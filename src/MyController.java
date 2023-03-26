@@ -2,7 +2,6 @@ import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Control;
 import peersim.core.Network;
-import peersim.core.Node;
 
 public class MyController implements Control {
 
@@ -28,18 +27,17 @@ public class MyController implements Control {
         // Transmission de messages entre les noeuds dans l'anneau
         for (int i = 0; i < Network.size(); i++) {
             MyNode node = (MyNode) Network.get(i);
-            Node nodeLeft = node.getNodeLeft();
-            Node nodeRight = node.getNodeRight();
+            MyNode nodeLeft = node.getNodeLeft();
+            MyNode nodeRight = node.getNodeRight();
 
             // Envoi d'un message au noeud à gauche
-            ring.getlistNodes().get(i).deliver(nodeLeft, node);
+            nodeLeft.deliver(node, node);
 
             // Envoi d'un message au noeud à droite
-            ring.getlistNodes().get(i).deliver(nodeRight, node);
+            nodeRight.deliver(node, node);
         }
 
         // Retourne 'false' pour indiquer que le contrôleur doit être exécuté une seule fois
         return false;
     }
-
 }

@@ -16,5 +16,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="peersim-1.0.5" />
   </component>
 </module>
