@@ -1,0 +1,14 @@
+random.seed 1234567890
+
+
+simulation.cycles 30
+simulation.ring_protocol 1
+
+#init with this number of nodes
+simulation.size 10
+
+#what we do on the simulation
+simulation.add_nodes 10
+simulation.remove 10
+simulation.messages 10
+
